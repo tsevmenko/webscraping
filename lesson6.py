@@ -6,7 +6,7 @@ def fetch_sport_page():
     url = "https://www.bbc.com/sport"
     try:
         response = requests.get(url)
-        response.raise_for_status()  # Raise an HTTPError for bad responses (4xx and 5xx)
+        response.raise_for_status()
         return response.text
     except requests.exceptions.RequestException as e:
         print(f"An error occurred: {e}")
@@ -30,7 +30,6 @@ def parse_document(content):
     soup = BeautifulSoup(content, 'html.parser')
     news_items = []
 
-    # Find the first 5 items with <div data-testid="promo">
     posts = soup.find_all('div', {'data-testid': 'promo'}, limit=5)
 
     for idx, post in enumerate(posts, start=1):
@@ -39,7 +38,6 @@ def parse_document(content):
         link = None
 
         if ul_tag:
-            # Get li elements directly under ul (not inside a nested div)
             li_tags = ul_tag.find_all('li', {'role': 'listitem'}, recursive=False)
             for li in li_tags:
                 topic_tag = li.find('span', class_='ssrcss-1if1g9v-MetadataText')
@@ -68,7 +66,6 @@ if __name__ == "__main__":
     news_items = parse_document(content)
     store_news_items_to_json(news_items, 'bbc_sport_news_items.json')
 
-    # Optional: Print the extracted news items
     for item in news_items:
         print(f"Link: {item['Link']}")
         print(f"Topics: {item['Topics']}")
